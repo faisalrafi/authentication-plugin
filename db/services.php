@@ -33,6 +33,7 @@ $functions = array(
         'description' => 'Returns the image saved for login',
         'type'        => 'write',
         'ajax'        => true,
+        'loginrequired' => false,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
     'auth_sentry_by_face_recognition_api' => array(
@@ -42,6 +43,7 @@ $functions = array(
         'description' => 'Calling the api for face recognition',
         'type'        => 'write',
         'ajax'        => true,
+        'loginrequired' => false,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
 );

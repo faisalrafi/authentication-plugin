@@ -48,11 +48,13 @@ class auth_sentry_external extends external_api {
                 if ($studentid == $file->get_itemid() && $file->get_filename() != '.') {
                     // Build the File URL. Long process! But extremely accurate.
                     $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
-                        $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
+                        $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), true);
                     // Display the image.
-                    $downloadurl = $fileurl->get_port() ? $fileurl->get_scheme() . '://' . $fileurl->get_host() .
-                        $fileurl->get_path() . ':' . $fileurl->get_port() : $fileurl->get_scheme() . '://'
-                        . $fileurl->get_host() . $fileurl->get_path();
+//                    $downloadurl = $fileurl->get_port() ? $fileurl->get_scheme() . '://' . $fileurl->get_host() .
+//                        $fileurl->get_path() . ':' . $fileurl->get_port() : $fileurl->get_scheme() . '://'
+//                        . $fileurl->get_host() . $fileurl->get_path();
+                    $downloadurl = $fileurl->out(false);
+//                    https://moodle414.test/pluginfile.php/1/auth_sentry/auth_student_photo/4/WIN_20230803_14_05_40_Pro.jpg
 
                     $returnvalue = [
                         'image_url' => $downloadurl,

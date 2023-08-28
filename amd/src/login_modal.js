@@ -72,7 +72,7 @@ define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notificati
                         args: params,
                     };
 
-                    Ajax.call([request])[0]
+                    Ajax.call([request], true, false)[0]
                         .done(function (value) {
                             st_img_url = value["image_url"];
                             // course_name = value["course_name"];
@@ -196,7 +196,7 @@ define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notificati
                                     args: params,
                                 };
 
-                                Ajax.call([request])[0]
+                                Ajax.call([request], true, false)[0]
                                     .done(function (value) {
                                         let original_img_response = value["original_img_response"];
                                         //window.console.log(original_img_response);
@@ -264,6 +264,7 @@ define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notificati
                                             if (!st_img) {
                                                 st_img = getDataUrl(studentimg);
                                             }
+                                            console.log(st_img);
                                             let image = webcam.snap();
                                             let webcamimg = document.getElementById("webcam-image");
                                             let webcamimgcrop = document.getElementById("webcam-image-cropped");

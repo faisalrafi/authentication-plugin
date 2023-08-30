@@ -28,12 +28,6 @@ if (empty($threshold)) {
     $threshold = 0.68;
 }
 
-//    $username = $_POST['username'];
-//var_dump($username);
-//die();
-//    $auth_plugin = get_auth_plugin('sentry');
-//    $auth_plugin->user_login($username, '');
-
     $modelurl = $CFG->wwwroot . '/auth/sentry/thirdpartylibs/models';
     $PAGE->requires->js("/auth/sentry/amd/build/face-api.min.js", true);
     $PAGE->requires->js_call_amd('auth_sentry/login_modal',

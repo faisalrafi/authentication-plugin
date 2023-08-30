@@ -2,8 +2,10 @@
 global $CFG;
 
 require_once('../../config.php');
-
 require_once($CFG->dirroot . '/auth/sentry/auth.php');
+if (isloggedin()) {
+    return redirect($CFG->wwwroot.'/my');
+}
 
 defined('MOODLE_INTERNAL') || die();
 

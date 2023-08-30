@@ -32,7 +32,7 @@ function auth_sentry_pluginfile($course, $cm, $context, $filearea, $args, $force
         return false;
     }
 
-    require_login();
+//    require_login();
 
     if ($filearea != 'auth_student_photo') {
         return false;

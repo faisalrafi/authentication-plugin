@@ -48,22 +48,20 @@ class auth_sentry_external extends external_api {
             foreach ($files as $file) {
                 if ($studentid == $file->get_itemid() && $file->get_filename() != '.') {
                     // Build the File URL. Long process! But extremely accurate.
-                    $token = '5d1d04edf300d014917a65a7b5dea141';
-//                    $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
-//                        $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
+                    $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
+                        $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
 //                     Display the image.
-//                    $downloadurl = $fileurl->get_port() ? $fileurl->get_scheme() . '://' . $fileurl->get_host() .
-//                        $fileurl->get_path() . ':' . $fileurl->get_port() : $fileurl->get_scheme() . '://'
-//                        . $fileurl->get_host() . $fileurl->get_path();
-//                  $downloadurl = $fileurl->out(false);
-                    $siteUrl = $CFG->wwwroot;
-                    $contextId = $file->get_contextid();
-                    $component = $file ->get_component();
-                    $fileArea = $file->get_filearea();
-                    $itemId = $file->get_itemid();
-                    $filePath = $file->get_filepath();
-                    $fileName = $file->get_filename();
-                    $downloadurl = "{$siteUrl}/webservice/pluginfile.php/{$contextId}/{$component}/{$fileArea}/{$itemId}{$filePath}{$fileName}?token={$token}&forcedownload=1";
+                    $downloadurl = $fileurl->get_port() ? $fileurl->get_scheme() . '://' . $fileurl->get_host() .
+                        $fileurl->get_path() . ':' . $fileurl->get_port() : $fileurl->get_scheme() . '://'
+                        . $fileurl->get_host() . $fileurl->get_path();
+//                    $siteUrl = $CFG->wwwroot;
+//                    $contextId = $file->get_contextid();
+//                    $component = $file ->get_component();
+//                    $fileArea = $file->get_filearea();
+//                    $itemId = $file->get_itemid();
+//                    $filePath = $file->get_filepath();
+//                    $fileName = $file->get_filename();
+//                    $downloadurl = "{$siteUrl}/pluginfile.php/{$contextId}/{$component}/{$fileArea}/{$itemId}{$filePath}{$fileName}";
 
                     $returnvalue = [
                         'image_url' => $downloadurl,

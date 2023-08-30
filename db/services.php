@@ -46,6 +46,16 @@ $functions = array(
         'loginrequired' => false,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
+    'auth_sentry_log_face_match' => array(
+        'classname'   => 'auth_sentry_external',
+        'methodname'  => 'log_face_match',
+        'classpath'   => 'auth/sentry/externallib.php',
+        'description' => 'Calling the api for get token',
+        'type'        => 'write',
+        'ajax'        => true,
+        'loginrequired' => false,
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
 );
 
 

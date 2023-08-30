@@ -1,7 +1,7 @@
 define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notification', './webcam'],
     function($, Ajax, str, ModalFactory, Notification, Webcam) {
         return {
-            async init (userid, successmessage, failedmessage,threshold, modelurl) {
+            async init (userid, successmessage, failedmessage, threshold, modelurl) {
                 // console.log(modelurl);
                 // Load the model.
                 await faceapi.nets.ssdMobilenetv1.loadFromUri(modelurl);
@@ -166,30 +166,12 @@ define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notificati
                                 spn.setAttribute("class", flag ? "text-success" : "text-danger");
                                 document.getElementById("message").appendChild(spn);
                             };
-                            // let logAttendance = (sessionId) => {
-                            //     let wsfunction =
-                            //         "block_attendance_by_face_update_db";
-                            //     let params = {
-                            //         courseid: course_id,
-                            //         studentid: studentid,
-                            //         sessionid: sessionId,
-                            //     };
-                            //     let request = {
-                            //         methodname: wsfunction,
-                            //         args: params,
-                            //     };
-                            //
-                            //     Ajax.call([request])[0]
-                            //         .done(function () {
-                            //             window.console.log("Attendance logged");
-                            //         })
-                            //         .fail(Notification.exception);
-                            // };
-                            let submitAttendance = (st_img, image) => {
+                            let submitAttendance = (st_img, image, username) => {
                                 let wsfunction = "auth_sentry_by_face_recognition_api";
                                 let params = {
                                     studentimg: st_img,
                                     webcampicture: image,
+                                    username: username,
                                 };
                                 let request = {
                                     methodname: wsfunction,
@@ -222,7 +204,31 @@ define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notificati
                                                 () => (window.location.href = $(location).attr("href"))
                                             );
 
-                                            window.location.href = M.cfg.wwwroot + "/my/";
+                                            let wsfunction = "auth_sentry_log_face_match";
+                                            let params = {
+                                                username: username,
+                                                token: Math.floor((Math.random()*1000000)+1),
+                                                distance: distance,
+                                            };
+                                            let request = {
+                                                methodname: wsfunction,
+                                                args: params,
+                                            };
+
+                                            Ajax.call([request], true, false)[0]
+                                                .done(function (value) {
+                                                    if (value.status === 'success') {
+                                                        console.log('Record inserted successfully');
+                                                        window.location.href = M.cfg.wwwroot + "/auth/sentry/success.php?username=" + value.username + "&token=" + value.token;
+                                                    } else {
+                                                        console.error('Failed to insert record:', value.message);
+                                                    }
+                                                })
+                                                .fail(function (err) {
+                                                    console.error(err);
+                                                });
+
+                                            // window.location.href = M.cfg.wwwroot + "/my/";
                                         } else {
                                             displayFailedMessage();
                                         }
@@ -245,7 +251,6 @@ define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notificati
                             //   return request;
                             // }
                             $("#start-webcam").on("click", function () {
-                                console.log(username);
                                 webcamElement.style.display = "block";
                                 canvasElement.style.display = "block";
                                 $("#start-webcam").hide();
@@ -264,7 +269,6 @@ define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notificati
                                             if (!st_img) {
                                                 st_img = getDataUrl(studentimg);
                                             }
-                                            console.log(st_img);
                                             let image = webcam.snap();
                                             let webcamimg = document.getElementById("webcam-image");
                                             let webcamimgcrop = document.getElementById("webcam-image-cropped");
@@ -276,7 +280,7 @@ define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notificati
                                             };
                                             a().then(() => {
                                                 //let request = getRequestForCheckingActiveWindowAPI(course_id);
-                                                submitAttendance(st_img, image);
+                                                submitAttendance(st_img, image, username);
                                             });
                                         });
                                         $("#try-again").on("click", function () {

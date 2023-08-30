@@ -17,11 +17,11 @@
 /**
  * Anobody can login with any password.
  *
- * @package auth_none
+ * @package auth_sentry
  * @author Martin Dougiamas
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
-
+global $CFG;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/authlib.php');
@@ -50,34 +50,17 @@ class auth_plugin_sentry extends auth_plugin_base {
     }
 
     /**
-     * Returns true if the username and password work or don't exist and false
-     * if the user exists and the password is wrong.
-     *
-     * @param string $username The username
-     * @param string $password The password
-     * @return bool Authentication success or failure.
-     */
-    function user_login ($username, $password) {
-        global $CFG, $DB;
-        if ($user = $DB->get_record('user', array('username'=>$username, 'mnethostid'=>$CFG->mnet_localhost_id))) {
-            return validate_internal_user_password($user, $password);
-        }
-        return true;
-
-    }
-
-    /**
      * Hook for overriding behaviour of login page.
      *  */
     function loginpage_hook() {
         global $PAGE, $CFG;
 
 
-            $PAGE->requires->jquery();
-            $PAGE->requires->js_init_code("buttonsAddMethod = 'auto';");
-            $content = str_replace(array("\n", "\r"), array("\\\n", "\\\r",), $this->get_buttons_string());
-            $PAGE->requires->js_init_code("buttonsCode = '$content';");
-            $PAGE->requires->js(new moodle_url($CFG->wwwroot . "/auth/sentry/script.js"));
+        $PAGE->requires->jquery();
+        $PAGE->requires->js_init_code("buttonsAddMethod = 'auto';");
+        $content = str_replace(array("\n", "\r"), array("\\\n", "\\\r",), $this->get_buttons_string());
+        $PAGE->requires->js_init_code("buttonsCode = '$content';");
+        $PAGE->requires->js(new moodle_url($CFG->wwwroot . "/auth/sentry/script.js"));
 
     }
 
@@ -95,9 +78,82 @@ class auth_plugin_sentry extends auth_plugin_base {
     }
 
     /**
+     * Returns true if the username and password work or don't exist and false
+     * if the user exists and the password is wrong.
+     *
+     * @param string $username The username
+     * @param string $password The password
+     * @return bool Authentication success or failure.
+     */
+
+    function user_login($username, $password) {
+        global $CFG, $DB;
+        if (empty($username)) {
+            echo 'no username';
+            return false;
+        }
+        if(empty($password)){
+            echo 'no password';
+            return false;
+        }
+        $user = $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id, 'auth' => 'sentry'));
+            if (!$user) {
+                return false;
+            }
+        return true;
+    }
+
+//    function user_login ($username, $password) {
+//        global $CFG, $DB;
+//        if ($user = $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id, 'auth' => 'sentry'))) {
+//            if(!isset($_REQUEST['logintoken']) && $_SERVER['REQUEST_METHOD'] == 'GET' && isset($_REQUEST['id'])){
+//                return true;
+//            } else {
+//                return validate_internal_user_password($user, $password);
+//            }
+//        }
+//        return false;
+//
+//    }
+
+    public function login($userinfo) {
+        global $DB, $SESSION, $CFG;
+        try{
+            if ($userinfo->username) {
+                $user = $DB->get_record('user',array('username' => $userinfo->username));
+//                echo "<pre>";
+//                var_dump($user);
+//                echo "</pre>";
+//                die();
+                if(!$user){
+                    echo "No user Found";
+                    return;
+                }
+
+                if($this->user_login($userinfo->username, $userinfo->password)) {
+                    // Now completes the user login.
+                    complete_user_login($user);
+
+                    redirect($CFG->wwwroot . '/my/');
+
+                } else {
+                    echo "Sorry";
+                }
+            }
+        } catch (Exception $e){
+
+            echo "Sorry Bro";
+
+        }
+    }
+
+
+    /**
      * Test the various configured Oauth2 providers.
      */
     public function test_settings() {
+        var_dump('hiii');
+        die();
         global $OUTPUT;
 
         $authplugin = get_auth_plugin('sentry');
@@ -129,13 +185,13 @@ class auth_plugin_sentry extends auth_plugin_base {
      * @return boolean result
      *
      */
-    function user_update_password($user, $newpassword) {
-        $user = get_complete_user_data('id', $user->id);
-        // This will also update the stored hash to the latest algorithm
-        // if the existing hash is using an out-of-date algorithm (or the
-        // legacy md5 algorithm).
-        return update_internal_user_password($user, $newpassword);
-    }
+//    function user_update_password($user, $newpassword) {
+//        $user = get_complete_user_data('id', $user->id);
+//        // This will also update the stored hash to the latest algorithm
+//        // if the existing hash is using an out-of-date algorithm (or the
+//        // legacy md5 algorithm).
+//        return update_internal_user_password($user, $newpassword);
+//    }
 
 //    function prevent_local_passwords() {
 //        return false;

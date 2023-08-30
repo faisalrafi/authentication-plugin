@@ -21,9 +21,10 @@
  * @copyright  2023, Brain Station 23
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+global $CFG;
 defined('MOODLE_INTERNAL') || die();
 
-require_once("$CFG->libdir/externallib.php");
+require_once($CFG->libdir . '/externallib.php');
 
 class auth_sentry_external extends external_api {
 
@@ -37,7 +38,7 @@ class auth_sentry_external extends external_api {
     }
 
     public static function get_user_image($username) {
-        global $DB;
+        global $DB, $CFG, $USER;
         $student= $DB->get_record_select('user', "username = :username", array('username' => $username));
         $studentid = $student->id;
         $context = context_system::instance();
@@ -47,14 +48,22 @@ class auth_sentry_external extends external_api {
             foreach ($files as $file) {
                 if ($studentid == $file->get_itemid() && $file->get_filename() != '.') {
                     // Build the File URL. Long process! But extremely accurate.
-                    $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
-                        $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), true);
-                    // Display the image.
+                    $token = '5d1d04edf300d014917a65a7b5dea141';
+//                    $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
+//                        $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
+//                     Display the image.
 //                    $downloadurl = $fileurl->get_port() ? $fileurl->get_scheme() . '://' . $fileurl->get_host() .
 //                        $fileurl->get_path() . ':' . $fileurl->get_port() : $fileurl->get_scheme() . '://'
 //                        . $fileurl->get_host() . $fileurl->get_path();
-                    $downloadurl = $fileurl->out(false);
-//                    https://moodle414.test/pluginfile.php/1/auth_sentry/auth_student_photo/4/WIN_20230803_14_05_40_Pro.jpg
+//                  $downloadurl = $fileurl->out(false);
+                    $siteUrl = $CFG->wwwroot;
+                    $contextId = $file->get_contextid();
+                    $component = $file ->get_component();
+                    $fileArea = $file->get_filearea();
+                    $itemId = $file->get_itemid();
+                    $filePath = $file->get_filepath();
+                    $fileName = $file->get_filename();
+                    $downloadurl = "{$siteUrl}/webservice/pluginfile.php/{$contextId}/{$component}/{$fileArea}/{$itemId}{$filePath}{$fileName}?token={$token}&forcedownload=1";
 
                     $returnvalue = [
                         'image_url' => $downloadurl,
@@ -88,6 +97,7 @@ class auth_sentry_external extends external_api {
             array(
                 'studentimg' => new external_value(PARAM_RAW, "Student id"),
                 'webcampicture' => new external_value(PARAM_RAW, "Student id"),
+                'username' => new external_value(PARAM_TEXT, "Username"),
             )
         );
     }
@@ -149,4 +159,53 @@ class auth_sentry_external extends external_api {
             )
         );
     }
+
+    public static function log_face_match_parameters(){
+        return new external_function_parameters(
+            array(
+                'username' => new external_value(PARAM_TEXT, 'Username of the user'),
+                'token' => new external_value(PARAM_TEXT, 'Token of the user'),
+                'distance' => new external_value(PARAM_TEXT, 'distance value'),
+            )
+        );
+    }
+    public static function log_face_match($username, $token, $distance){
+        global $DB, $CFG;
+
+            $record = new stdClass();
+            $record->username = $username;
+            $record->token = $token;
+            $record->status = 1;
+            $record->distance = $distance;
+
+            $id = $DB->insert_record('auth_sentry_linked_login', $record);
+//            redirect(new moodle_url($CFG->wwwroot . '/auth/sentry/success.php', array('username' => urlencode($username), 'token' => urlencode($token))));
+
+        if ($id) {
+            return array(
+                'status' => 'success',
+                'message' => 'Record inserted successfully',
+                'username' => $username,
+                'token' => $token,
+                'distance' => $distance,
+            );
+        } else {
+            return array(
+                'status' => 'error',
+                'message' => 'Failed to insert record',
+            );
+        }
+    }
+    public static function log_face_match_returns(){
+        return new external_single_structure(
+            array(
+                'status' => new external_value(PARAM_TEXT, 'status'),
+                'message' => new external_value(PARAM_TEXT, 'message'),
+                'username' => new external_value(PARAM_TEXT, 'username'),
+                'token' => new external_value(PARAM_TEXT, 'token of the user'),
+                'distance' => new external_value(PARAM_TEXT, 'distance value'),
+            )
+        );
+    }
+
 }

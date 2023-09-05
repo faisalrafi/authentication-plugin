@@ -1,7 +1,7 @@
 define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notification', './webcam'],
     function($, Ajax, str, ModalFactory, Notification, Webcam) {
         return {
-            async init (userid, successmessage, failedmessage, threshold, modelurl) {
+            async init (userid, successmessage, failedmessage, threshold, modelurl, nouser) {
                 // console.log(modelurl);
                 // Load the model.
                 await faceapi.nets.ssdMobilenetv1.loadFromUri(modelurl);
@@ -75,7 +75,6 @@ define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notificati
                     Ajax.call([request], true, false)[0]
                         .done(function (value) {
                             st_img_url = value["image_url"];
-                            // course_name = value["course_name"];
                             getMessages().then(() => {
                                 console.log("Modal Messages are printed");
                                 create_modal();
@@ -92,6 +91,9 @@ define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notificati
                           <div>
                           <p id='desc_webcam'> ` + desc_webcam + `
                           </p><p> ` + warning + ` </p>
+                          </div>
+                          <div id="error-message" class="alert alert-danger" style="display: none;">
+                            ${nouser}
                           </div>
                           <video id="webcam" autoplay playsinline width="300" height="225" style="display:none;margin:auto"></video>
                           <canvas id="canvas" class="d-none" style="display:none;"></canvas>
@@ -261,6 +263,10 @@ define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notificati
 
                                         $("#submit-attendance").on("click", function () {
                                             removeMessages();
+                                            if (!username) {
+                                                $("#error-message").show();
+                                                return;
+                                            }
 
                                             document.getElementById('submit-attendance').disabled = true;
                                             document.getElementById('submit-attendance').innerText = "";
@@ -279,7 +285,7 @@ define(['jquery', 'core/ajax', 'core/str','core/modal_factory', 'core/notificati
                                                 image = await detectface(studentimg, studentimgcrop);
                                             };
                                             a().then(() => {
-                                                //let request = getRequestForCheckingActiveWindowAPI(course_id);
+
                                                 submitAttendance(st_img, image, username);
                                             });
                                         });

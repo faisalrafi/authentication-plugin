@@ -18,7 +18,7 @@
  * Anobody can login with any password.
  *
  * @package auth_sentry
- * @author Martin Dougiamas
+ * @author  2023, BrainStation-23 Ltd.
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 global $CFG;
@@ -103,19 +103,6 @@ class auth_plugin_sentry extends auth_plugin_base {
         return true;
     }
 
-//    function user_login ($username, $password) {
-//        global $CFG, $DB;
-//        if ($user = $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id, 'auth' => 'sentry'))) {
-//            if(!isset($_REQUEST['logintoken']) && $_SERVER['REQUEST_METHOD'] == 'GET' && isset($_REQUEST['id'])){
-//                return true;
-//            } else {
-//                return validate_internal_user_password($user, $password);
-//            }
-//        }
-//        return false;
-//
-//    }
-
     public function login($userinfo) {
         global $DB, $SESSION, $CFG;
         try{
@@ -131,12 +118,12 @@ class auth_plugin_sentry extends auth_plugin_base {
                 }
 
                 if($this->user_login($userinfo->username, $userinfo->password)) {
-                    // Now completes the user login.
+
                     complete_user_login($user);
 
-//                    $DB->delete_records('auth_sentry_linked_login', array('username' => $userinfo->username, 'token' => $userinfo->password));
-
                     redirect($CFG->wwwroot . '/my/');
+
+                    $DB->delete_records('auth_sentry_linked_login', array('username' => $userinfo->username, 'token' => $userinfo->password));
 
                 } else {
                     echo "Sorry";
@@ -148,34 +135,6 @@ class auth_plugin_sentry extends auth_plugin_base {
 
         }
     }
-
-
-//    /**
-//     * Test the various configured Oauth2 providers.
-//     */
-//    public function test_settings() {
-//        var_dump('hiii');
-//        die();
-//        global $OUTPUT;
-//
-//        $authplugin = get_auth_plugin('sentry');
-//        $idps = $authplugin->loginpage_idp_list('');
-//        $templateidps = [];
-//
-//        if (empty($idps)) {
-//            echo $OUTPUT->notification(get_string('noconfiguredidps', 'auth_sentry'), 'notifyproblem');
-//            return;
-//        } else {
-//            foreach ($idps as $idp) {
-//                $idpid = $idp['url']->get_param('id');
-//                $sesskey = $idp['url']->get_param('sesskey');
-//                $testurl = new moodle_url('/auth/sentry/test.php', ['id' => $idpid, 'sesskey' => $sesskey]);
-//
-//                $templateidps[] = ['name' => $idp['name'], 'url' => $testurl->out(), 'iconurl' => $idp['iconurl']];
-//            }
-//            echo $OUTPUT->render_from_template('auth_sentry/idps', ['idps' => $templateidps]);
-//        }
-//    }
 
     /**
      * Updates the user's password.

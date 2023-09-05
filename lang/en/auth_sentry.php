@@ -18,7 +18,7 @@
  * Strings for component 'auth_sentry', language 'en'.
  *
  * @package   auth_sentry
- * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @copyright 2023, BrainStation-23 Ltd.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -62,4 +62,6 @@ $string['cancel_image_upload'] = 'Cancelled image upload';
 $string['upload_image_title'] = 'Upload image';
 $string['provide_image'] = 'You must provide a image of seleted user';
 $string['title_upload'] = 'Upload Image';
+$string['nouserfound'] = 'Invalid Username';
+$string['notenable'] = 'Plugin is not enabled';
 

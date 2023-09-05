@@ -19,7 +19,7 @@
  *
  * @package    auth_sentry
  * @category   check
- * @copyright  2020 Brendan Heywood <brendan@catalyst-au.net>
+ * @copyright  2023, BrainStation-23 Ltd.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

@@ -15,34 +15,3 @@
         </div>
     </div>
 </div>
-
-<!--<script>-->
-<!--    document.addEventListener("DOMContentLoaded", function() {-->
-<!--        const startWebcamButton = document.querySelector(".start-webcam");-->
-<!--        const stopWebcamButton = document.querySelector(".stop-webcam");-->
-<!--        const webcamContainer = document.querySelector(".webcam-container");-->
-<!--        const webcam = document.querySelector("#webcam");-->
-
-<!--        startWebcamButton.addEventListener("click", function() {-->
-<!--            // Start webcam streaming-->
-<!--            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {-->
-<!--                navigator.mediaDevices.getUserMedia({ video: true })-->
-<!--                        .then(function(stream) {-->
-<!--                            webcamStream = stream;-->
-<!--                            webcamContainer.style.display = "block"; // Show webcam container-->
-<!--                            webcam.srcObject = webcamStream;-->
-<!--                        })-->
-<!--                        .catch(function(error) {-->
-<!--                            console.error("Error accessing webcam:", error);-->
-<!--                        });-->
-<!--            }-->
-<!--        });-->
-<!--        stopWebcamButton.addEventListener("click", function() {-->
-<!--            if (webcamStream) {-->
-<!--                webcamStream.getTracks().forEach(track => track.stop());-->
-<!--                webcam.srcObject = null;-->
-<!--                webcamContainer.style.display = "none";-->
-<!--            }-->
-<!--        });-->
-<!--    });-->
-<!--</script>-->

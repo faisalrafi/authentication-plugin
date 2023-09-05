@@ -18,7 +18,7 @@
  * User list for uploading image in auth_sentry plugin.
  *
  * @package    auth_sentry
- * @copyright  2022 Brain Station 23 Ltd.
+ * @copyright  2023 Brain Station 23 Ltd.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
@@ -48,11 +48,14 @@ $sql = "SELECT * FROM {user}";
 $users = $DB->get_records_sql($sql, [], $perpage * $page, $perpage);
 
 foreach ($users as $user) {
-    $user->image_url = auth_sentry_get_image_url($user->id);
-    if (strlen($user->image_url)) {
-        $user->delete_image_url =
-            $CFG->wwwroot . "/auth/sentry/delete_user_image.php?userid=$user->id&perpage=$perpage&page=$page";
-        $user->edit_image_url = $CFG->wwwroot . "/auth/sentry/upload_image.php?id=$user->id";
+    if ($user->username != 'guest') { // Check if the username is not 'guest'
+        $user->image_url = auth_sentry_get_image_url($user->id);
+        if (strlen($user->image_url)) {
+            $user->delete_image_url =
+                $CFG->wwwroot . "/auth/sentry/delete_user_image.php?userid=$user->id&perpage=$perpage&page=$page";
+            $user->edit_image_url = $CFG->wwwroot . "/auth/sentry/upload_image.php?id=$user->id";
+        }
+        $filteredUsers[] = $user;
     }
 }
 
@@ -61,7 +64,7 @@ $totaluser = $DB->count_records('user');
 $baseurl = new moodle_url('/auth/sentry/userlist.php', array('perpage' => $perpage));
 
 $templatecontext = (object)[
-    'users' => array_values($users),
+    'users' => array_values($filteredUsers),
     'redirecturl' => new moodle_url('/auth/sentry/upload_image.php'),
     'settingsurl' => new moodle_url('/admin/settings.php?section=authsettingsentry')
 ];
